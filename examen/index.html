@@ -198,8 +198,8 @@
               :key="trailer.id"
             >
               <iframe
-                v-if="trailer.key"
-                :src="'https://www.youtube.com/embed/' + trailer.key"
+                v-if="trailer.trailerKey"
+                :src="'https://www.youtube.com/embed/' + trailer.trailerKey"
                 frameborder="0"
                 allowfullscreen
               ></iframe>
@@ -244,10 +244,33 @@
             fetch(url)
               .then((response) => response.json())
               .then((data) => {
-                this.trailers = data.results.filter((movie) => movie.video);
+                const upcomingMovies = data.results;
+                const trailerPromises = upcomingMovies.map((movie) => {
+                  const videoUrl = `https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${apiKey}`;
+                  return fetch(videoUrl)
+                    .then((response) => response.json())
+                    .then((videoData) => {
+                      const trailer = videoData.results.find(
+                        (video) =>
+                          video.site === "YouTube" && video.type === "Trailer"
+                      );
+                      return trailer
+                        ? { ...movie, trailerKey: trailer.key }
+                        : null;
+                    });
+                });
+                Promise.all(trailerPromises)
+                  .then((trailers) => {
+                    this.trailers = trailers.filter(
+                      (trailer) => trailer !== null
+                    );
+                  })
+                  .catch((error) =>
+                    console.error("Error al obtener tráilers:", error)
+                  );
               })
               .catch((error) =>
-                console.error("Error al obtener tráilers:", error)
+                console.error("Error al obtener próximas películas:", error)
               );
           },
           searchMovies() {
