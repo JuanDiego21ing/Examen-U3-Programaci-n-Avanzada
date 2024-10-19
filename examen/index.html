@@ -128,23 +128,21 @@
     </style>
   </head>
   <body>
-    <nav>
-      <ul>
-        <li><a href="#">TMDb</a></li>
-        <li><a href="#">Peliculas</a></li>
-        <li><a href="#">Series</a></li>
-        <li><a href="#">Actores</a></li>
-        <li><a href="login.html">Login</a></li>
-        <li>
-          <input
-            type="text"
-            placeholder="Search..."
-            v-model="searchQuery"
-            @keyup.enter="searchMovies"
-          />
-        </li>
-      </ul>
-    </nav>
+    <div id="navbar">
+      <script>
+        function loadNavbar() {
+          fetch("navbar.html")
+            .then((response) => response.text())
+            .then((data) => {
+              document.getElementById("navbar").innerHTML = data;
+            })
+            .catch((error) =>
+              console.error("Error al cargar el navbar:", error)
+            );
+        }
+        loadNavbar();
+      </script>
+    </div>
     <div
       class="banner"
       :style="{ backgroundImage: 'url(' + bannerImage + ')' }"
