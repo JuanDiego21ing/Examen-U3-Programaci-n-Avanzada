@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TMDb - Series</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+      }
+      nav {
+        background-color: #333;
+        color: white;
+        padding: 10px;
+      }
+      nav ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      nav ul li {
+        display: inline;
+        margin-right: 20px;
+      }
+      .series-container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      .series-item {
+        display: inline-block;
+        width: 200px;
+        margin: 10px;
+        text-align: center;
+      }
+      .series-item img {
+        width: 100%;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="navbar">
+      <script>
+        function loadNavbar() {
+          fetch("navbar.html")
+            .then((response) => response.text())
+            .then((data) => {
+              document.getElementById("navbar").innerHTML = data;
+            })
+            .catch((error) =>
+              console.error("Error al cargar el navbar:", error)
+            );
+        }
+        loadNavbar();
+      </script>
+    </div>
+    <div id="app" class="series-container">
+      <h1>Peliculas Disponibles</h1>
+      <div class="series-list" v-if="series.length">
+        <div class="series-item" v-for="serie in series" :key="serie.id">
+          <a :href="'movieDetails.html?id=' + serie.id">
+            <img :src="getPoster(serie.poster_path)" :alt="serie.name" />
+            <h3>{{ serie.name }}</h3>
+          </a>
+        </div>
+      </div>
+      <div v-else>
+        <p>Cargando peliculas...</p>
+      </div>
+    </div>
+
+    <script>
+      new Vue({
+        el: "#app",
+        data: {
+          series: [],
+        },
+        methods: {
+          getSeries() {
+            const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+            const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1`;
+
+            fetch(url)
+              .then((response) => response.json())
+              .then((data) => {
+                this.series = data.results;
+              })
+              .catch((error) =>
+                console.error("Error al obtener series:", error)
+              );
+          },
+          getPoster(path) {
+            return path
+              ? `https://image.tmdb.org/t/p/w500${path}`
+              : "https://via.placeholder.com/200x300";
+          },
+        },
+        created() {
+          this.getSeries();
+        },
+      });
+    </script>
+  </body>
+</html>
