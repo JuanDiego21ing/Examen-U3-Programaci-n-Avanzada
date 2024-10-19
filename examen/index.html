@@ -134,6 +134,7 @@
         <li><a href="#">Peliculas</a></li>
         <li><a href="#">Series</a></li>
         <li><a href="#">Actores</a></li>
+        <li><a href="login.html">Login</a></li>
         <li>
           <input
             type="text"
@@ -144,7 +145,10 @@
         </li>
       </ul>
     </nav>
-    <div class="banner">
+    <div
+      class="banner"
+      :style="{ backgroundImage: 'url(' + bannerImage + ')' }"
+    >
       <h1>Bienvenido a The Movie DB</h1>
       <input
         type="text"
@@ -213,6 +217,62 @@
           </button>
         </div>
       </section>
+
+      <section v-if="popularMovies.length">
+        <h2>Lo más popular</h2>
+        <div class="carousel-container">
+          <button
+            class="carousel-btn prev-btn"
+            @click="scrollCarousel('prev', 'popularCarousel')"
+          >
+            &#10094;
+          </button>
+          <div class="carousel" id="popularCarousel">
+            <div
+              class="carousel-item"
+              v-for="movie in popularMovies"
+              :key="movie.id"
+            >
+              <img :src="getPoster(movie.poster_path)" :alt="movie.title" />
+              <h3>{{ movie.title }}</h3>
+            </div>
+          </div>
+          <button
+            class="carousel-btn next-btn"
+            @click="scrollCarousel('next', 'popularCarousel')"
+          >
+            &#10095;
+          </button>
+        </div>
+      </section>
+
+      <section v-if="freeToWatchMovies.length">
+        <h2>Gratis para ver</h2>
+        <div class="carousel-container">
+          <button
+            class="carousel-btn prev-btn"
+            @click="scrollCarousel('prev', 'freeToWatchCarousel')"
+          >
+            &#10094;
+          </button>
+          <div class="carousel" id="freeToWatchCarousel">
+            <div
+              class="carousel-item"
+              v-for="movie in freeToWatchMovies"
+              :key="movie.id"
+            >
+              <img :src="getPoster(movie.poster_path)" :alt="movie.title" />
+              <h3>{{ movie.title }}</h3>
+            </div>
+          </div>
+          <button
+            class="carousel-btn next-btn"
+            @click="scrollCarousel('next', 'freeToWatchCarousel')"
+          >
+            &#10095;
+          </button>
+        </div>
+      </section>
     </div>
 
     <script>
@@ -222,6 +282,9 @@
           searchQuery: "",
           trendingMovies: [],
           trailers: [],
+          popularMovies: [],
+          bannerImage: "",
+          freeToWatchMovies: [],
         },
         methods: {
           getTrendingMovies() {
@@ -273,6 +336,57 @@
                 console.error("Error al obtener próximas películas:", error)
               );
           },
+          getPopularMovies() {
+            const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+            const promises = [];
+
+            for (let page = 1; page <= 5; page++) {
+              const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=${page}`;
+              promises.push(fetch(url).then((response) => response.json()));
+            }
+
+            Promise.all(promises)
+              .then((responses) => {
+                this.popularMovies = responses.flatMap((data) => data.results);
+              })
+              .catch((error) =>
+                console.error("Error al obtener películas populares:", error)
+              );
+          },
+          getPopularTVShows() {
+            const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+            const promises = [];
+
+            for (let page = 1; page <= 5; page++) {
+              const url = `https://api.themoviedb.org/3/tv/popular?api_key=${apiKey}&language=en-US&page=${page}`;
+              promises.push(fetch(url).then((response) => response.json()));
+            }
+
+            Promise.all(promises)
+              .then((responses) => {
+                this.popularTVShows = responses.flatMap((data) => data.results);
+              })
+              .catch((error) =>
+                console.error("Error al obtener series populares:", error)
+              );
+          },
+          getFreeToWatchMovies() {
+            const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+            const url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=en-US&with_watch_providers=free&page=1`;
+
+            fetch(url)
+              .then((response) => response.json())
+              .then((data) => {
+                this.freeToWatchMovies = data.results;
+              })
+              .catch((error) =>
+                console.error(
+                  "Error al obtener películas gratis para ver:",
+                  error
+                )
+              );
+          },
+
           searchMovies() {
             const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
             const query = this.searchQuery;
@@ -301,10 +415,29 @@
               carousel.scrollLeft -= scrollAmount;
             }
           },
+          setRandomBannerImage() {
+            const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+            const url = `https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`;
+
+            fetch(url)
+              .then((response) => response.json())
+              .then((data) => {
+                const randomMovie =
+                  data.results[Math.floor(Math.random() * data.results.length)];
+                this.bannerImage = `https://image.tmdb.org/t/p/original${randomMovie.backdrop_path}`;
+              })
+              .catch((error) =>
+                console.error("Error al obtener la imagen del banner:", error)
+              );
+          },
         },
         created() {
           this.getTrendingMovies();
           this.getLatestTrailers();
+          this.getPopularMovies();
+          this.getPopularTVShows();
+          this.getFreeToWatchMovies();
+          this.setRandomBannerImage();
         },
       });
     </script>
