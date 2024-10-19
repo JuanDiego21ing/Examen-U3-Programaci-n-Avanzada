@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TMDb - Detalles de la Serie</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <style>
       body {
-        font-family: 'Roboto', sans-serif;
+        font-family: "Roboto", sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #ffffff; 
-        color: #000000; 
+        background-color: #ffffff;
+        color: #000000;
       }
 
       nav {
-        background-color: #f0f0f0; 
-        color: black; 
+        background-color: #f0f0f0;
+        color: black;
         padding: 15px;
         text-align: center;
       }
@@ -34,7 +34,7 @@
       }
 
       nav ul li a {
-        color: black; 
+        color: black;
         text-decoration: none;
         font-weight: bold;
       }
@@ -43,17 +43,17 @@
         display: flex;
         flex-direction: column;
         min-height: 100vh;
-        justify-content: center; 
+        justify-content: center;
         align-items: center;
         padding: 20px;
       }
 
       .poster {
-        width: 300px; 
+        width: 300px;
         height: auto;
         object-fit: cover;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); 
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
         margin-bottom: 20px;
       }
 
@@ -94,8 +94,8 @@
 
       .cast {
         display: flex;
-        overflow-x: auto; 
-        white-space: nowrap; 
+        overflow-x: auto;
+        white-space: nowrap;
         padding-bottom: 10px;
       }
 
@@ -103,9 +103,9 @@
         margin: 0 20px;
         text-align: center;
         width: 180px;
-        color: black; 
-        flex: 0 0 auto; 
-        background-color: #e0e0e0; 
+        color: black;
+        flex: 0 0 auto;
+        background-color: #e0e0e0;
         border-radius: 12px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         padding: 15px;
@@ -146,93 +146,127 @@
         color: gold;
       }
 
-      .recommendations, .popular {
+      .recommendations,
+      .popular {
         margin-top: 40px;
         width: 100%;
         text-align: center;
       }
 
-      .recommendations h2, .popular h2 {
+      .recommendations h2,
+      .popular h2 {
         font-size: 1.8rem;
         margin-bottom: 20px;
       }
 
-      .recommendations .cast, .popular .cast {
+      .recommendations .cast,
+      .popular .cast {
         display: flex;
         justify-content: center;
         overflow-x: auto;
         padding-bottom: 10px;
       }
     </style>
-</head>
-<body>
-    <nav>
-      <ul>
-        <li><a href="index.html">TMDb</a></li>
-        <li><a href="series.html">Series</a></li>
-        <li><a href="peliculas.html">Películas</a></li>
-        <li><a href="#">Actores</a></li>
-      </ul>
-    </nav>
+  </head>
+  <body>
+    <div id="navbar">
+      <script>
+        function loadNavbar() {
+          fetch("navbar.html")
+            .then((response) => response.text())
+            .then((data) => {
+              document.getElementById("navbar").innerHTML = data;
+            })
+            .catch((error) =>
+              console.error("Error al cargar el navbar:", error)
+            );
+        }
+        loadNavbar();
+      </script>
+    </div>
 
     <div id="app" class="container">
-        <img :src="getPoster(series.poster_path)" class="poster" alt="Poster de la serie" />
-        <div class="details">
-            <h1>{{ series.name }}</h1>
-            <p class="rating">Puntuación: {{ series.vote_average }} / 10</p>
-            <p class="overview"><strong>Resumen:</strong> {{ series.overview }}</p>
+      <img
+        :src="getPoster(series.poster_path)"
+        class="poster"
+        alt="Poster de la serie"
+      />
+      <div class="details">
+        <h1>{{ series.name }}</h1>
+        <p class="rating">Puntuación: {{ series.vote_average }} / 10</p>
+        <p class="overview"><strong>Resumen:</strong> {{ series.overview }}</p>
 
-            <div class="season" v-if="currentSeason">
-                <p><strong>Temporada {{ currentSeason.season_number }}:</strong> {{ currentSeason.name }}</p>
-                <p><strong>Estreno:</strong> {{ currentSeason.air_date }} - {{ currentSeason.episode_count }} Episodios</p>
-            </div>
-
-            <div class="rate-container">
-                <label for="rate">Califica esta serie:</label>
-                <div class="stars">
-                    <span v-for="n in 5" :key="n" 
-                          class="star" 
-                          :class="{'filled': n <= userRating}" 
-                          @click="setRating(n)"
-                          @mouseover="hoverRating = n" 
-                          @mouseleave="hoverRating = null">
-                        ★
-                    </span>
-                </div>
-                <p v-if="savedRating !== null">Tu calificación guardada: {{ savedRating }} / 5</p>
-            </div>
+        <div class="season" v-if="currentSeason">
+          <p>
+            <strong>Temporada {{ currentSeason.season_number }}:</strong> {{
+            currentSeason.name }}
+          </p>
+          <p>
+            <strong>Estreno:</strong> {{ currentSeason.air_date }} - {{
+            currentSeason.episode_count }} Episodios
+          </p>
         </div>
 
-        <div class="cast-container" v-if="cast.length">
-            <h2>Reparto de la serie</h2>
-            <div class="cast">
-                <div v-for="member in cast" :key="member.id" class="cast-item">
-                    <img :src="getActorImage(member.profile_path)" alt="Imagen de {{ member.name }}" />
-                    <p>{{ member.name }}</p>
-                    <p><em>como {{ member.character }}</em></p>
-                </div>
-            </div>
+        <div class="rate-container">
+          <label for="rate">Califica esta serie:</label>
+          <div class="stars">
+            <span
+              v-for="n in 5"
+              :key="n"
+              class="star"
+              :class="{'filled': n <= userRating}"
+              @click="setRating(n)"
+              @mouseover="hoverRating = n"
+              @mouseleave="hoverRating = null"
+            >
+              ★
+            </span>
+          </div>
+          <p v-if="savedRating !== null">
+            Tu calificación guardada: {{ savedRating }} / 5
+          </p>
         </div>
+      </div>
 
-        <div class="recommendations" v-if="recommendations.length">
-            <h2>Recomendaciones</h2>
-            <div class="cast">
-                <div v-for="rec in recommendations" :key="rec.id" class="cast-item">
-                    <img :src="getPoster(rec.poster_path)" alt="Poster de {{ rec.name }}" />
-                    <p>{{ rec.name }}</p>
-                </div>
-            </div>
+      <div class="cast-container" v-if="cast.length">
+        <h2>Reparto de la serie</h2>
+        <div class="cast">
+          <div v-for="member in cast" :key="member.id" class="cast-item">
+            <img
+              :src="getActorImage(member.profile_path)"
+              alt="Imagen de {{ member.name }}"
+            />
+            <p>{{ member.name }}</p>
+            <p><em>como {{ member.character }}</em></p>
+          </div>
         </div>
+      </div>
 
-        <div class="popular" v-if="popular.length">
-            <h2>Series Populares</h2>
-            <div class="cast">
-                <div v-for="pop in popular" :key="pop.id" class="cast-item">
-                    <img :src="getPoster(pop.poster_path)" alt="Poster de {{ pop.name }}" />
-                    <p>{{ pop.name }}</p>
-                </div>
-            </div>
+      <div class="recommendations" v-if="recommendations.length">
+        <h2>Recomendaciones</h2>
+        <div class="cast">
+          <div v-for="rec in recommendations" :key="rec.id" class="cast-item">
+            <img
+              :src="getPoster(rec.poster_path)"
+              alt="Poster de {{ rec.name }}"
+            />
+            <p>{{ rec.name }}</p>
+          </div>
         </div>
+      </div>
+
+      <div class="popular" v-if="popular.length">
+        <h2>Series Populares</h2>
+        <div class="cast">
+          <div v-for="pop in popular" :key="pop.id" class="cast-item">
+            <img
+              :src="getPoster(pop.poster_path)"
+              alt="Poster de {{ pop.name }}"
+            />
+            <p>{{ pop.name }}</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -244,7 +278,7 @@
           currentSeason: null,
           userRating: null,
           savedRating: null,
-          hoverRating: null, 
+          hoverRating: null,
           recommendations: [],
           popular: [],
         },
@@ -252,61 +286,74 @@
           getSeriesDetails() {
             const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
             const urlParams = new URLSearchParams(window.location.search);
-            const seriesId = urlParams.get('id');
+            const seriesId = urlParams.get("id");
             const url = `https://api.themoviedb.org/3/tv/${seriesId}?api_key=${apiKey}&language=es-ES`;
             const castUrl = `https://api.themoviedb.org/3/tv/${seriesId}/credits?api_key=${apiKey}&language=es-ES`;
             const recommendationsUrl = `https://api.themoviedb.org/3/tv/${seriesId}/recommendations?api_key=${apiKey}&language=es-ES`;
             const popularUrl = `https://api.themoviedb.org/3/tv/popular?api_key=${apiKey}&language=es-ES&page=1`;
 
             fetch(url)
-              .then(response => response.json())
-              .then(data => {
+              .then((response) => response.json())
+              .then((data) => {
                 this.series = data;
-                this.currentSeason = data.seasons ? data.seasons[data.seasons.length - 1] : null;
-                this.loadRating(seriesId); 
+                this.currentSeason = data.seasons
+                  ? data.seasons[data.seasons.length - 1]
+                  : null;
+                this.loadRating(seriesId);
               })
-              .catch(error => console.error("Error al obtener detalles de la serie:", error));
+              .catch((error) =>
+                console.error("Error al obtener detalles de la serie:", error)
+              );
 
             fetch(castUrl)
-              .then(response => response.json())
-              .then(data => {
+              .then((response) => response.json())
+              .then((data) => {
                 this.cast = data.cast;
               })
-              .catch(error => console.error("Error al obtener el reparto:", error));
+              .catch((error) =>
+                console.error("Error al obtener el reparto:", error)
+              );
 
             fetch(recommendationsUrl)
-              .then(response => response.json())
-              .then(data => {
+              .then((response) => response.json())
+              .then((data) => {
                 this.recommendations = data.results;
               })
-              .catch(error => console.error("Error al obtener recomendaciones:", error));
+              .catch((error) =>
+                console.error("Error al obtener recomendaciones:", error)
+              );
 
             fetch(popularUrl)
-              .then(response => response.json())
-              .then(data => {
+              .then((response) => response.json())
+              .then((data) => {
                 this.popular = data.results;
               })
-              .catch(error => console.error("Error al obtener series populares:", error));
+              .catch((error) =>
+                console.error("Error al obtener series populares:", error)
+              );
           },
           getPoster(path) {
             return path
-              ? `https://image.tmdb.org/t/p/w500${path}` 
+              ? `https://image.tmdb.org/t/p/w500${path}`
               : "https://via.placeholder.com/300x450";
           },
           getActorImage(path) {
             return path
-              ? `https://image.tmdb.org/t/p/w300${path}` 
+              ? `https://image.tmdb.org/t/p/w300${path}`
               : "https://via.placeholder.com/150x225";
           },
           setRating(rating) {
             this.userRating = rating;
-            const seriesId = new URLSearchParams(window.location.search).get('id');
+            const seriesId = new URLSearchParams(window.location.search).get(
+              "id"
+            );
             localStorage.setItem(`rating_${seriesId}`, this.userRating);
             this.savedRating = this.userRating;
           },
           loadRating(seriesId) {
-            this.savedRating = localStorage.getItem(`rating_${seriesId}`) || null;
-            this.userRating = this.savedRating; 
+            this.savedRating =
+              localStorage.getItem(`rating_${seriesId}`) || null;
+            this.userRating = this.savedRating;
           },
         },
         created() {
@@ -314,5 +361,5 @@
         },
       });
     </script>
-</body>
+  </body>
 </html>
