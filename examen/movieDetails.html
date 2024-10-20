@@ -11,6 +11,7 @@
         margin: 0;
         padding: 0;
         background-color: #f4f4f4;
+        overflow-x: hidden;
       }
 
       .banner {
@@ -110,6 +111,7 @@
         background-color: white;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-width: 100%;
       }
 
       .carousel-item {
@@ -200,15 +202,84 @@
         color: white;
         cursor: pointer;
       }
+
       .container {
         max-width: 1200px;
         margin: 0 auto;
         padding: 20px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      @media (max-width: 767px) {
+        .cast-carousel-container,
+        .additional-info-container {
+          width: 100%;
+          margin-bottom: 20px;
+        }
+      }
+
+      @media (min-width: 768px) {
+        .cast-carousel-container {
+          width: 70%;
+          margin-right: 20px;
+        }
+
+        .additional-info-container {
+          width: 30%;
+        }
       }
 
       h2 {
         color: #032541;
         font-size: 1.5rem;
+      }
+
+      .additional-info-container {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .additional-info-container p {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .additional-info-container .keywords {
+        display: block;
+        margin-top: 15px;
+      }
+
+      .additional-info-container .keywords span {
+        background-color: #032541;
+        color: white;
+        padding: 5px 10px;
+        margin-right: 5px;
+        margin-bottom: 10px;
+        display: inline-block;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        white-space: nowrap;
+      }
+
+      .additional-info-container h2 {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        color: #032541;
+      }
+
+      .recommendations-carousel-container {
+        margin-top: 50px;
+        width: 100%;
+      }
+
+      .recommendations-carousel-container h2 {
+        font-size: 1.5rem;
+        color: #032541;
+        margin-bottom: 10px;
       }
     </style>
   </head>
@@ -302,9 +373,48 @@
               <p>{{ actor.character }}</p>
             </a>
           </div>
+
+          <div class="recommendations-carousel-container">
+            <h2>Recomendaciones</h2>
+            <div class="carousel">
+              <a
+                :href="'movieDetails.html?id=' + recommendation.id"
+                class="carousel-item"
+                v-for="recommendation in movie.recommendations.results.slice(0, 10)"
+                :key="recommendation.id"
+              >
+                <img
+                  :src="getPoster(recommendation.poster_path)"
+                  :alt="recommendation.title"
+                />
+                <h3>{{ recommendation.title }}</h3>
+                <p>{{ recommendation.release_date.split('-')[0] }}</p>
+              </a>
+            </div>
+          </div>
         </div>
-      </div>
-      
+
+        <div class="additional-info-container">
+          <h2>Información Adicional</h2>
+          <p><strong>Status:</strong> {{ movie.status }}</p>
+          <p><strong>Idioma Original:</strong> {{ movie.original_language }}</p>
+          <p>
+            <strong>Presupuesto:</strong> ${{ movie.budget.toLocaleString() }}
+          </p>
+          <p>
+            <strong>Ingresos:</strong> ${{ movie.revenue.toLocaleString() }}
+          </p>
+
+          <div
+            class="keywords"
+            v-if="movie.keywords && movie.keywords.keywords.length"
+          >
+            <h2>Palabras clave</h2>
+            <span v-for="keyword in movie.keywords.keywords" :key="keyword.id"
+              >{{ keyword.name }}</span
+            >
+          </div>
+        </div>
       </div>
     </div>
 
@@ -321,7 +431,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const movieId = urlParams.get("id");
             const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
-            const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=es-ES&append_to_response=credits,images,videos`;
+            const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=es-ES&append_to_response=credits,images,videos,keywords,recommendations`;
 
             fetch(url)
               .then((response) => response.json())
