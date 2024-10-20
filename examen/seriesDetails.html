@@ -7,169 +7,201 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <style>
       body {
-        font-family: "Roboto", sans-serif;
+        font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #ffffff;
-        color: #000000;
+        background-color: #f4f4f4;
       }
 
-      nav {
-        background-color: #f0f0f0;
-        color: black;
-        padding: 15px;
-        text-align: center;
-      }
-
-      nav ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
+      .banner {
+        position: relative;
+        width: 100%;
+        height: 600px;
+        background-size: cover;
+        background-position: center;
         display: flex;
-        justify-content: center;
-      }
-
-      nav ul li {
-        margin: 0 20px;
-      }
-
-      nav ul li a {
-        color: black;
-        text-decoration: none;
-        font-weight: bold;
-      }
-
-      .container {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        justify-content: center;
         align-items: center;
-        padding: 20px;
+        box-shadow: inset 0px -100px 150px rgba(0, 0, 0, 0.7);
+      }
+
+      .content-overlay {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        color: white;
+        padding-left: 50px;
+        z-index: 10;
       }
 
       .poster {
-        width: 300px;
-        height: auto;
-        object-fit: cover;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-        margin-bottom: 20px;
+        max-width: 250px;
+        border-radius: 10px;
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
+        margin-right: 20px;
       }
 
-      .details {
-        text-align: center;
-        max-width: 800px;
-        padding: 20px;
+      .series-details {
+        max-width: 600px;
       }
 
       h1 {
-        margin-top: 0;
-        font-size: 2.2rem;
+        margin: 0;
+        font-size: 2.5rem;
       }
 
-      .rating {
-        font-size: 1.2rem;
-        margin: 10px 0;
+      .series-info {
+        margin-top: 10px;
+        font-size: 1rem;
+      }
+
+      .series-info div {
+        margin-bottom: 5px;
+      }
+
+      .genres {
+        margin-top: 10px;
+      }
+
+      .genres span {
+        background-color: #032541;
+        color: white;
+        padding: 5px 10px;
+        margin-right: 5px;
+        border-radius: 5px;
+        font-size: 1rem;
       }
 
       .overview {
-        margin: 20px 0;
+        margin-top: 20px;
         font-size: 1.1rem;
-        line-height: 1.5;
       }
 
-      .cast-container {
-        background-color: #f0f0f0;
-        padding: 20px;
-        margin-top: 30px;
-        width: 100%;
-        text-align: center;
+      .cast-list {
+        margin-top: 20px;
       }
 
-      .cast-container h2 {
-        margin-bottom: 20px;
-        font-size: 1.8rem;
-      }
-
-      .cast {
-        display: flex;
-        overflow-x: auto;
-        white-space: nowrap;
-        padding-bottom: 10px;
-      }
-
-      .cast-item {
-        margin: 0 20px;
-        text-align: center;
-        width: 180px;
-        color: black;
-        flex: 0 0 auto;
-        background-color: #e0e0e0;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-        padding: 15px;
-        transition: transform 0.3s;
-        cursor: pointer;
-      }
-
-      .cast-item:hover {
-        transform: scale(1.05);
-      }
-
-      .cast-item img {
-        width: 100%;
-        border-radius: 12px;
+      .cast-list h3 {
         margin-bottom: 10px;
       }
 
-      .season {
-        margin: 20px 0;
-        font-size: 1.1rem;
+      .cast-list ul {
+        list-style: none;
+        padding: 0;
       }
 
-      .rate-container {
-        margin: 20px 0;
+      .cast-list ul li {
+        font-size: 1rem;
+        margin-bottom: 5px;
       }
 
-      .stars {
+      .carousel-container {
+        margin-top: 50px;
+      }
+
+      .carousel {
         display: flex;
+        overflow-x: auto;
+        gap: 20px;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .carousel-item {
+        min-width: 150px;
+        background-color: white;
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        
+      }
+
+      .carousel-item img {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      .carousel-item h3 {
+        font-size: 0.9rem;
+        margin-top: 10px;
+        color: #333;
+      }
+
+      .carousel-item p {
+        font-size: 0.8rem;
+        color: #666;
+      }
+
+      .buttons {
+        margin-top: 20px;
+      }
+
+      .buttons button {
+        background-color: #032541;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1rem;
+        margin-right: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .buttons button:hover {
+        background-color: #0658b6;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
         justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 800px;
+        width: 100%;
+        position: relative;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        background-color: transparent;
+        border: none;
+        font-size: 40px;
+        color: white;
         cursor: pointer;
       }
 
-      .star {
-        font-size: 30px;
-        color: lightgray;
-      }
-
-      .filled {
-        color: gold;
-      }
-
-      .recommendations,
-      .popular {
-        margin-top: 40px;
-        width: 100%;
-        text-align: center;
-      }
-
-      .recommendations h2,
-      .popular h2 {
-        font-size: 1.8rem;
-        margin-bottom: 20px;
-      }
-
-      .recommendations .cast,
-      .popular .cast {
-        display: flex;
-        justify-content: center;
-        overflow-x: auto;
-        padding-bottom: 10px;
+      .read-more {
+        color: #f39c12;
+        cursor: pointer;
+        font-weight: bold;
       }
     </style>
   </head>
   <body>
+
     <div id="navbar">
       <script>
         function loadNavbar() {
@@ -186,95 +218,72 @@
       </script>
     </div>
 
-    <div id="app" class="container">
-      <img
-        :src="getPoster(series.poster_path)"
-        class="poster"
-        alt="Poster de la serie"
-      />
-      <div class="details">
-        <h1>{{ series.name }}</h1>
-        <p class="rating">Puntuación: {{ series.vote_average }} / 10</p>
-        <p class="overview"><strong>Resumen:</strong> {{ series.overview }}</p>
 
-        <div class="season" v-if="currentSeason">
-          <p>
-            <strong>Temporada {{ currentSeason.season_number }}:</strong> {{
-            currentSeason.name }}
-          </p>
-          <p>
-            <strong>Estreno:</strong> {{ currentSeason.air_date }} - {{
-            currentSeason.episode_count }} Episodios
-          </p>
+    <div id="app">
+      <div
+        class="banner"
+        :style="{ backgroundImage: 'url(' + getBackdrop(series.backdrop_path) + ')' }"
+      >
+        <div class="content-overlay">
+          <img
+            class="poster"
+            :src="getPoster(series.poster_path)"
+            :alt="series.name"
+          />
+
+          <div class="series-details">
+            <h1>{{ series.name }} ({{ series.first_air_date.split('-')[0] }})</h1>
+            <div class="series-info">
+              <div>
+                <strong>Fecha de estreno:</strong> {{ series.first_air_date }}
+              </div>
+              <div><strong>Temporadas:</strong> {{ series.number_of_seasons }}</div>
+              <div class="genres">
+                <span v-for="genre in series.genres" :key="genre.id"
+                  >{{ genre.name }}</span
+                >
+              </div>
+            </div>
+            <div class="cast-list">
+              <h3>Reparto principal</h3>
+              <ul>
+                <li
+                  v-for="actor in series.credits.cast.slice(0, 5)"
+                  :key="actor.id"
+                >
+                  <strong>{{ actor.name }}</strong> / {{ actor.character }}
+                </li>
+              </ul>
+            </div>
+            <div class="buttons">
+              <button @click="rateSeries">⭐ Rating</button>
+              <button @click="addFavorite">❤️ Favorito</button>
+            </div>
+
+            <p class="overview">
+              {{ truncatedOverview }}
+              <span v-if="isTruncated" class="read-more" @click="showFullOverview">Leer más</span>
+            </p>
+          </div>
         </div>
+      </div>
 
-        <div class="rate-container">
-          <label for="rate">Califica esta serie:</label>
-          <div class="stars">
-            <span
-              v-for="n in 5"
-              :key="n"
-              class="star"
-              :class="{'filled': n <= userRating}"
-              @click="setRating(n)"
-              @mouseover="hoverRating = n"
-              @mouseleave="hoverRating = null"
+      <div class="container">
+        <div class="carousel-container">
+          <h2>Recomendaciones</h2>
+          <div class="carousel">
+            <a
+              :href="'seriesDetails.html?id=' + rec.id"
+              class="carousel-item"
+              v-for="rec in recommendations"
+              :key="rec.id"
             >
-              ★
-            </span>
-          </div>
-          <p v-if="savedRating !== null">
-            Tu calificación guardada: {{ savedRating }} / 5
-          </p>
-        </div>
-      </div>
-
-      <div class="cast-container" v-if="cast.length">
-        <h2>Reparto de la serie</h2>
-        <div class="cast">
-          <div v-for="member in cast" :key="member.id" class="cast-item">
-            <img
-              :src="getActorImage(member.profile_path)"
-              alt="Imagen de {{ member.name }}"
-            />
-            <p>{{ member.name }}</p>
-            <p><em>como {{ member.character }}</em></p>
-          </div>
-        </div>
-      </div>
-
-      <div class="recommendations" v-if="recommendations.length">
-        <h2>Recomendaciones</h2>
-        <div class="cast">
-          <div
-            v-for="rec in recommendations"
-            :key="rec.id"
-            class="cast-item"
-            @click="goToSeries(rec.id)"
-          >
-            <img
-              :src="getPoster(rec.poster_path)"
-              alt="Poster de {{ rec.name }}"
-            />
-            <p>{{ rec.name }}</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="popular" v-if="popular.length">
-        <h2>Series Populares</h2>
-        <div class="cast">
-          <div
-            v-for="pop in popular"
-            :key="pop.id"
-            class="cast-item"
-            @click="goToSeries(pop.id)"
-          >
-            <img
-              :src="getPoster(pop.poster_path)"
-              alt="Poster de {{ pop.name }}"
-            />
-            <p>{{ pop.name }}</p>
+              <img
+                :src="getPoster(rec.poster_path)"
+                :alt="rec.name"
+              />
+              <h3>{{ rec.name }}</h3>
+            </a>
           </div>
         </div>
       </div>
@@ -284,90 +293,53 @@
       new Vue({
         el: "#app",
         data: {
-          series: null,
-          cast: [],
-          currentSeason: null,
-          userRating: null,
-          savedRating: null,
-          hoverRating: null,
+          series: {},
           recommendations: [],
-          popular: [],
+          isTruncated: true,
+          maxChars: 150,
+        },
+        computed: {
+          truncatedOverview() {
+            return this.isTruncated && this.series.overview
+              ? this.series.overview.substring(0, this.maxChars) + "..."
+              : this.series.overview;
+          },
         },
         methods: {
           getSeriesDetails() {
-            const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
             const urlParams = new URLSearchParams(window.location.search);
             const seriesId = urlParams.get("id");
-            const url = `https://api.themoviedb.org/3/tv/${seriesId}?api_key=${apiKey}&language=es-ES`;
-            const castUrl = `https://api.themoviedb.org/3/tv/${seriesId}/credits?api_key=${apiKey}&language=es-ES`;
-            const recommendationsUrl = `https://api.themoviedb.org/3/tv/${seriesId}/recommendations?api_key=${apiKey}&language=es-ES`;
-            const popularUrl = `https://api.themoviedb.org/3/tv/popular?api_key=${apiKey}&language=es-ES&page=1`;
+            const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+            const url = `https://api.themoviedb.org/3/tv/${seriesId}?api_key=${apiKey}&language=es-ES&append_to_response=credits,recommendations`;
 
             fetch(url)
               .then((response) => response.json())
               .then((data) => {
                 this.series = data;
-                this.currentSeason = data.seasons
-                  ? data.seasons[data.seasons.length - 1]
-                  : null;
-                this.loadRating(seriesId);
+                this.recommendations = data.recommendations.results;
               })
               .catch((error) =>
                 console.error("Error al obtener detalles de la serie:", error)
-              );
-
-            fetch(castUrl)
-              .then((response) => response.json())
-              .then((data) => {
-                this.cast = data.cast;
-              })
-              .catch((error) =>
-                console.error("Error al obtener el reparto:", error)
-              );
-
-            fetch(recommendationsUrl)
-              .then((response) => response.json())
-              .then((data) => {
-                this.recommendations = data.results;
-              })
-              .catch((error) =>
-                console.error("Error al obtener recomendaciones:", error)
-              );
-
-            fetch(popularUrl)
-              .then((response) => response.json())
-              .then((data) => {
-                this.popular = data.results;
-              })
-              .catch((error) =>
-                console.error("Error al obtener series populares:", error)
               );
           },
           getPoster(path) {
             return path
               ? `https://image.tmdb.org/t/p/w500${path}`
-              : "https://via.placeholder.com/300x450";
+              : "https://via.placeholder.com/200x300";
           },
-          getActorImage(path) {
+          getBackdrop(path) {
             return path
-              ? `https://image.tmdb.org/t/p/w300${path}`
-              : "https://via.placeholder.com/150x225";
+              ? ` https://image.tmdb.org/t/p/original${path}`
+              : "https://via.placeholder.com/1000x500";
           },
-          setRating(rating) {
-            this.userRating = rating;
-            const seriesId = new URLSearchParams(window.location.search).get(
-              "id"
-            );
-            localStorage.setItem(`rating_${seriesId}`, this.userRating);
-            this.savedRating = this.userRating;
+          rateSeries() {
+            alert("Función de rating en desarrollo.");
           },
-          loadRating(seriesId) {
-            this.savedRating =
-              localStorage.getItem(`rating_${seriesId}`) || null;
-            this.userRating = this.savedRating;
+          addFavorite() {
+            alert("Añadido a favoritos.");
           },
-          goToSeries(seriesId) {
-            window.location.href = `seriesDetails.html?id=${seriesId}`;
+          showFullOverview() {
+            this.isTruncated = false;
           },
         },
         created() {

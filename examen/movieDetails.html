@@ -138,7 +138,6 @@
         font-size: 0.8rem;
         color: #666;
       }
-
       .buttons {
         margin-top: 20px;
       }
@@ -201,7 +200,6 @@
         color: white;
         cursor: pointer;
       }
-
       .container {
         max-width: 1200px;
         margin: 0 auto;
@@ -211,12 +209,6 @@
       h2 {
         color: #032541;
         font-size: 1.5rem;
-      }
-
-      .read-more {
-        color: #f39c12;
-        cursor: pointer;
-        font-weight: bold;
       }
     </style>
   </head>
@@ -278,11 +270,7 @@
               <button @click="openTrailerModal">🎬 Ver Trailer</button>
             </div>
 
-            <!-- Mostrar descripción truncada o completa -->
-            <p class="overview">
-              {{ truncatedOverview }}
-              <span v-if="isTruncated" class="read-more" @click="showFullOverview">Leer más</span>
-            </p>
+            <p class="overview">{{ movie.overview }}</p>
           </div>
         </div>
       </div>
@@ -300,8 +288,7 @@
         <div class="cast-carousel-container">
           <h2>Reparto completo</h2>
           <div class="carousel">
-            <a
-              :href="'actorDetails.html?id=' + actor.id"
+            <div
               class="carousel-item"
               v-for="actor in movie.credits.cast.slice(0, 10)"
               :key="actor.id"
@@ -312,7 +299,7 @@
               />
               <h3>{{ actor.name }}</h3>
               <p>{{ actor.character }}</p>
-            </a>
+            </div>
           </div>
         </div>
       </div>
@@ -325,15 +312,6 @@
           movie: {},
           trailerKey: null,
           showModal: false,
-          isTruncated: true,
-          maxChars: 150,
-        },
-        computed: {
-          truncatedOverview() {
-            return this.isTruncated && this.movie.overview
-              ? this.movie.overview.substring(0, this.maxChars) + "..."
-              : this.movie.overview;
-          },
         },
         methods: {
           getMovieDetails() {
@@ -397,9 +375,6 @@
 
             const iframe = document.querySelector(".modal-content iframe");
             iframe.src = iframe.src;
-          },
-          showFullOverview() {
-            this.isTruncated = false;
           },
         },
         created() {
