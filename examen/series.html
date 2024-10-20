@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TMDb - Series</title>
@@ -42,36 +42,38 @@
         border-radius: 8px;
       }
     </style>
-  </head>
-  <body>
-    <div id="navbar">
-      <script>
-        function loadNavbar() {
-          fetch("navbar.html")
-            .then((response) => response.text())
-            .then((data) => {
-              document.getElementById("navbar").innerHTML = data;
-            })
-            .catch((error) =>
-              console.error("Error al cargar el navbar:", error)
-            );
-        }
-        loadNavbar();
-      </script>
-    </div>
+</head>
+<body>
+  
+  <div id="navbar">
+    <script>
+      function loadNavbar() {
+        fetch("navbar.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("navbar").innerHTML = data;
+          })
+          .catch((error) =>
+            console.error("Error al cargar el navbar:", error)
+          );
+      }
+      loadNavbar();
+    </script>
+  </div>
+
     <div id="app" class="series-container">
-      <h1>Series Disponibles</h1>
-      <div class="series-list" v-if="series.length">
-        <div class="series-item" v-for="serie in series" :key="serie.id">
-          <a :href="'seriesDetails.html?id=' + serie.id">
-            <img :src="getPoster(serie.poster_path)" :alt="serie.name" />
-            <h3>{{ serie.name }}</h3>
-          </a>
+        <h1>Series Disponibles</h1>
+        <div class="series-list" v-if="series.length">
+            <div class="series-item" v-for="serie in series" :key="serie.id">
+                <a :href="'seriesDetails.html?id=' + serie.id">
+                    <img :src="getPoster(serie.poster_path)" :alt="serie.name" />
+                    <h3>{{ serie.name }}</h3>
+                </a>
+            </div>
         </div>
-      </div>
-      <div v-else>
-        <p>Cargando series...</p>
-      </div>
+        <div v-else>
+            <p>Cargando series...</p>
+        </div>
     </div>
 
     <script>
@@ -105,5 +107,5 @@
         },
       });
     </script>
-  </body>
+</body>
 </html>
