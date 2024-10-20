@@ -3,198 +3,384 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Detalles de la Película</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <title>Detalle de la Película</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <style>
       body {
-        background-color: #f0f0f0;
         font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
       }
-      .movie-container {
-        max-width: 800px;
-        margin: 20px auto;
-        padding: 20px;
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      }
-      .movie-title {
-        font-size: 24px;
-        margin-bottom: 20px;
-        text-align: center;
-      }
-      .movie-description {
-        margin-bottom: 20px;
-        text-align: justify;
-      }
-      .image-container {
+
+      .banner {
+        position: relative;
+        width: 100%;
+        height: 600px;
+        background-size: cover;
+        background-position: center;
         display: flex;
-        justify-content: center;
-        margin-bottom: 20px;
+        align-items: center;
+        box-shadow: inset 0px -100px 150px rgba(0, 0, 0, 0.7);
       }
-      .rating {
+
+      .content-overlay {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 100%;
         display: flex;
-        gap: 10px;
-        justify-content: center;
+        justify-content: flex-start;
+        align-items: center;
+        color: white;
+        padding-left: 50px;
+        z-index: 10;
+      }
+
+      .poster {
+        max-width: 250px;
+        border-radius: 10px;
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
+        margin-right: 20px;
+      }
+
+      .movie-details {
+        max-width: 600px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 2.5rem;
+      }
+
+      .movie-info {
+        margin-top: 10px;
+        font-size: 1rem;
+      }
+
+      .movie-info div {
+        margin-bottom: 5px;
+      }
+
+      .genres {
+        margin-top: 10px;
+      }
+
+      .genres span {
+        background-color: #032541;
+        color: white;
+        padding: 5px 10px;
+        margin-right: 5px;
+        border-radius: 5px;
+        font-size: 1rem;
+      }
+
+      .overview {
+        margin-top: 20px;
+        font-size: 1.1rem;
+      }
+
+      .cast-list {
         margin-top: 20px;
       }
-      .star {
-        font-size: 30px;
-        cursor: pointer;
-        color: #ddd;
+
+      .cast-list h3 {
+        margin-bottom: 10px;
       }
-      .star.selected {
-        color: #ffd700;
+
+      .cast-list ul {
+        list-style: none;
+        padding: 0;
       }
-      .popular-movies {
-        margin-top: 40px;
+
+      .cast-list ul li {
+        font-size: 1rem;
+        margin-bottom: 5px;
       }
-      .card {
-        border: none;
+
+      .cast-carousel-container {
+        margin-top: 50px;
+      }
+
+      .carousel {
+        display: flex;
+        overflow-x: auto;
+        gap: 20px;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .carousel-item {
+        min-width: 150px;
+        background-color: white;
+        padding: 10px;
         border-radius: 8px;
-        transition: transform 0.2s;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
-      .card:hover {
-        transform: scale(1.05);
+
+      .carousel-item img {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+        border-radius: 8px;
       }
-      .card img {
-        border-radius: 8px 8px 0 0;
+
+      .carousel-item h3 {
+        font-size: 0.9rem;
+        margin-top: 10px;
+        color: #333;
       }
-      .card-title {
-        font-size: 18px;
-        font-weight: bold;
+
+      .carousel-item p {
+        font-size: 0.8rem;
+        color: #666;
       }
-      .card-text {
-        font-size: 14px;
+      .buttons {
+        margin-top: 20px;
       }
-      .btn {
-        background-color: #007bff;
+
+      .buttons button {
+        background-color: #032541;
+        color: white;
         border: none;
+        padding: 10px 20px;
+        font-size: 1rem;
+        margin-right: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
       }
-      .btn:hover {
-        background-color: #0056b3;
+
+      .buttons button:hover {
+        background-color: #0658b6;
+      }
+
+      .buttons button:last-child {
+        background-color: #f39c12;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 800px;
+        width: 100%;
+        position: relative;
+      }
+
+      .modal-content iframe {
+        width: 100%;
+        height: 450px;
+        border-radius: 10px;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        background-color: transparent;
+        border: none;
+        font-size: 40px;
+        color: white;
+        cursor: pointer;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      h2 {
+        color: #032541;
+        font-size: 1.5rem;
       }
     </style>
   </head>
   <body>
+    <div id="navbar">
+      <script>
+        function loadNavbar() {
+          fetch("navbar.html")
+            .then((response) => response.text())
+            .then((data) => {
+              document.getElementById("navbar").innerHTML = data;
+            })
+            .catch((error) =>
+              console.error("Error al cargar el navbar:", error)
+            );
+        }
+        loadNavbar();
+      </script>
+    </div>
     <div id="app">
-      <div class="movie-container" v-if="movie">
-        <h1 class="movie-title">{{ movie.title }}</h1>
-        <div class="image-container">
+      <div
+        class="banner"
+        :style="{ backgroundImage: 'url(' + getBackdrop(movie.backdrop_path) + ')' }"
+      >
+        <div class="content-overlay">
           <img
-            :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`"
-            alt="movie.title"
-            class="img-fluid"
+            class="poster"
+            :src="getPoster(movie.poster_path)"
+            :alt="movie.title"
           />
-        </div>
-        <p class="movie-description">{{ movie.overview }}</p>
 
-        <div class="rating">
-          <span
-            v-for="star in 5"
-            :key="star"
-            class="star"
-            :class="{ selected: star <= rating }"
-            @click="rateMovie(star)"
-          >
-            ★
-          </span>
-        </div>
-
-        <p v-if="rated" class="text-center mt-3">
-          ¡Gracias por tu calificación de {{ rating }} estrellas!
-        </p>
-      </div>
-
-      <div class="popular-movies" v-if="popularMovies.length">
-        <h2 class="text-center">Películas Populares</h2>
-        <div class="row">
-          <div class="col-6 col-md-4 mb-4" v-for="popular in popularMovies" :key="popular.id">
-            <div class="card">
-              <img
-                :src="`https://image.tmdb.org/t/p/w500${popular.poster_path}`"
-                class="card-img-top"
-                :alt="popular.title"
-              />
-              <div class="card-body">
-                <h5 class="card-title">{{ popular.title }}</h5>
-                <p class="card-text">{{ popular.overview.substring(0, 70) }}...</p>
-                <button class="btn btn-primary" @click="selectMovie(popular.id)">Ver Detalles</button>
+          <div class="movie-details">
+            <h1>{{ movie.title }} ({{ movie.release_date.split('-')[0] }})</h1>
+            <div class="movie-info">
+              <div>
+                <strong>Fecha de estreno:</strong> {{ movie.release_date }}
               </div>
+              <div><strong>Duración:</strong> {{ movie.runtime }} minutos</div>
+              <div class="genres">
+                <span v-for="genre in movie.genres" :key="genre.id"
+                  >{{ genre.name }}</span
+                >
+              </div>
+            </div>
+            <div class="cast-list">
+              <h3>Reparto principal</h3>
+              <ul>
+                <li
+                  v-for="actor in movie.credits.cast.slice(0, 5)"
+                  :key="actor.id"
+                >
+                  <strong>{{ actor.name }}</strong> / {{ actor.character }}
+                </li>
+              </ul>
+            </div>
+            <div class="buttons">
+              <button @click="rateMovie">⭐ Rating</button>
+              <button @click="addFavorite">❤️ Favorito</button>
+              <button @click="openTrailerModal">🎬 Ver Trailer</button>
+            </div>
+
+            <p class="overview">{{ movie.overview }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal" v-if="trailerKey">
+        <div class="modal-content">
+          <button class="close-modal" @click="closeModal">&times;</button>
+          <iframe
+            :src="'https://www.youtube.com/embed/' + trailerKey"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+      <div class="container">
+        <div class="cast-carousel-container">
+          <h2>Reparto completo</h2>
+          <div class="carousel">
+            <div
+              class="carousel-item"
+              v-for="actor in movie.credits.cast.slice(0, 10)"
+              :key="actor.id"
+            >
+              <img
+                :src="getProfileImage(actor.profile_path)"
+                :alt="actor.name"
+              />
+              <h3>{{ actor.name }}</h3>
+              <p>{{ actor.character }}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-      const { createApp, ref, onMounted } = Vue;
-
-      createApp({
-        setup() {
-          const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
-          const movie = ref(null);
-          const rating = ref(0);
-          const rated = ref(false);
-          const popularMovies = ref([]);
-
-          const fetchMovie = async () => {
-            const movieId = localStorage.getItem("movieId");
-            if (!movieId) {
-              alert("No se ha seleccionado ninguna película.");
-              window.location.href = "movies.html";
-              return;
-            }
-
-            try {
-              const response = await axios.get(
-                `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=es-ES`
-              );
-              movie.value = response.data;
-              fetchPopularMovies();
-            } catch (error) {
-              console.error("Error fetching movie:", error);
-            }
-          };
-
-          const fetchPopularMovies = async () => {
-            try {
-              const response = await axios.get(
-                `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=es-ES&page=1`
-              );
-              popularMovies.value = response.data.results;
-            } catch (error) {
-              console.error("Error fetching popular movies:", error);
-            }
-          };
-
-          const rateMovie = (stars) => {
-            rating.value = stars;
-            rated.value = true;
-          };
-
-          const selectMovie = (id) => {
-            localStorage.setItem("movieId", id);
-            window.location.reload();
-          };
-
-          onMounted(fetchMovie);
-
-          return {
-            movie,
-            rating,
-            rated,
-            rateMovie,
-            popularMovies,
-            selectMovie,
-          };
+      new Vue({
+        el: "#app",
+        data: {
+          movie: {},
+          trailerKey: null,
+          showModal: false,
         },
-      }).mount("#app");
+        methods: {
+          getMovieDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const movieId = urlParams.get("id");
+            const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+            const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=es-ES&append_to_response=credits,images,videos`;
+
+            fetch(url)
+              .then((response) => response.json())
+              .then((data) => {
+                this.movie = data;
+
+                const trailers = data.videos.results.filter(
+                  (video) =>
+                    video.site === "YouTube" && video.type === "Trailer"
+                );
+                if (trailers.length > 0) {
+                  this.trailerKey = trailers[0].key;
+                }
+              })
+              .catch((error) =>
+                console.error(
+                  "Error al obtener detalles de la película:",
+                  error
+                )
+              );
+          },
+          getPoster(path) {
+            return path
+              ? `https://image.tmdb.org/t/p/w500${path}`
+              : "https://via.placeholder.com/200x300";
+          },
+          getBackdrop(path) {
+            return path
+              ? `https://image.tmdb.org/t/p/original${path}`
+              : "https://via.placeholder.com/1000x500";
+          },
+          getProfileImage(path) {
+            return path
+              ? `https://image.tmdb.org/t/p/w200${path}`
+              : "https://via.placeholder.com/150x225";
+          },
+          rateMovie() {
+            alert("Función de rating en desarrollo.");
+          },
+          addFavorite() {
+            alert("Añadido a favoritos.");
+          },
+          openTrailerModal() {
+            if (this.trailerKey) {
+              this.showModal = true;
+              document.querySelector(".modal").style.display = "flex";
+            } else {
+              alert("Tráiler no disponible.");
+            }
+          },
+          closeModal() {
+            this.showModal = false;
+            document.querySelector(".modal").style.display = "none";
+
+            const iframe = document.querySelector(".modal-content iframe");
+            iframe.src = iframe.src;
+          },
+        },
+        created() {
+          this.getMovieDetails();
+        },
+      });
     </script>
   </body>
 </html>
