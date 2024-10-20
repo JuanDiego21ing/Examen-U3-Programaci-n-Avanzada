@@ -288,7 +288,8 @@
         <div class="cast-carousel-container">
           <h2>Reparto completo</h2>
           <div class="carousel">
-            <div
+            <a
+              :href="'actorDetails.html?id=' + actor.id"
               class="carousel-item"
               v-for="actor in movie.credits.cast.slice(0, 10)"
               :key="actor.id"
@@ -299,9 +300,11 @@
               />
               <h3>{{ actor.name }}</h3>
               <p>{{ actor.character }}</p>
-            </div>
+            </a>
           </div>
         </div>
+      </div>
+      
       </div>
     </div>
 
