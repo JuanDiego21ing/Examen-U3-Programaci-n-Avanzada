@@ -119,7 +119,6 @@
         border-radius: 8px;
         text-align: center;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        
       }
 
       .carousel-item img {
@@ -218,7 +217,6 @@
       </script>
     </div>
 
-
     <div id="app">
       <div
         class="banner"
@@ -258,6 +256,7 @@
             <div class="buttons">
               <button @click="rateSeries">⭐ Rating</button>
               <button @click="addFavorite">❤️ Favorito</button>
+              <button @click="goToSeasons">📺 Temporadas</button>
             </div>
 
             <p class="overview">
@@ -329,7 +328,7 @@
           },
           getBackdrop(path) {
             return path
-              ? ` https://image.tmdb.org/t/p/original${path}`
+              ? `https://image.tmdb.org/t/p/original${path}`
               : "https://via.placeholder.com/1000x500";
           },
           rateSeries() {
@@ -337,6 +336,11 @@
           },
           addFavorite() {
             alert("Añadido a favoritos.");
+          },
+          goToSeasons() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const seriesId = urlParams.get("id");
+            window.location.href = `seasons.html?id=${seriesId}`;
           },
           showFullOverview() {
             this.isTruncated = false;
