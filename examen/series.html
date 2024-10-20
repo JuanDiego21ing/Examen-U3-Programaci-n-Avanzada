@@ -63,8 +63,16 @@
 
     <div id="app" class="series-container">
         <h1>Series Disponibles</h1>
-        <div class="series-list" v-if="series.length">
-            <div class="series-item" v-for="serie in series" :key="serie.id">
+        
+        
+        <label for="genre-select">Filtrar por género:</label>
+        <select id="genre-select" v-model="selectedGenre" @change="filterByGenre">
+            <option value="">Todos</option>
+            <option v-for="genre in genres" :key="genre.id" :value="genre.id">{{ genre.name }}</option>
+        </select>
+
+        <div class="series-list" v-if="filteredSeries.length">
+            <div class="series-item" v-for="serie in filteredSeries" :key="serie.id">
                 <a :href="'seriesDetails.html?id=' + serie.id">
                     <img :src="getPoster(serie.poster_path)" :alt="serie.name" />
                     <h3>{{ serie.name }}</h3>
@@ -81,6 +89,18 @@
         el: "#app",
         data: {
           series: [],
+          genres: [],
+          selectedGenre: '',
+        },
+        computed: {
+          filteredSeries() {
+            if (!this.selectedGenre) {
+              return this.series;
+            }
+            return this.series.filter(serie => 
+              serie.genre_ids.includes(this.selectedGenre)
+            );
+          },
         },
         methods: {
           getSeries() {
@@ -96,6 +116,23 @@
                 console.error("Error al obtener series:", error)
               );
           },
+          getGenres() {
+            const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+            const url = `https://api.themoviedb.org/3/genre/tv/list?api_key=${apiKey}&language=en-US`;
+
+            fetch(url)
+              .then((response) => response.json())
+              .then((data) => {
+                this.genres = data.genres;
+              })
+              .catch((error) =>
+                console.error("Error al obtener géneros:", error)
+              );
+          },
+          filterByGenre() {
+            
+
+          },
           getPoster(path) {
             return path
               ? `https://image.tmdb.org/t/p/w500${path}`
@@ -104,6 +141,7 @@
         },
         created() {
           this.getSeries();
+          this.getGenres();
         },
       });
     </script>
