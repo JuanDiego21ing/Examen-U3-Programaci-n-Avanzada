@@ -92,23 +92,20 @@
     <h1>Temporadas de {{ series.name }}</h1>
 
     <div v-for="season in series.seasons" :key="season.id" class="season">
-        <img :src="getPoster(season.poster_path)" alt="Poster de {{ season.name }}">
+        <a :href="`seasonsDetails.html?seriesId=${series.id}&seasonId=${season.season_number}`">
+            <img :src="getPoster(season.poster_path)" alt="Poster de {{ season.name }}">
+        </a>
         <div>
             <h2>{{ season.name }} (Temporada {{ season.season_number }})</h2>
             <div class="season-info">
                 <div><strong>Fecha de estreno:</strong> {{ season.air_date }}</div>
-                <div><strong>Número de episodios:</strong> {{ season.episode_count }}</div> 
-            </div>
-            <div class="episodes">
-                <div v-for="episode in season.episodes" :key="episode.id" class="episode">
-                    <h3>Capítulo {{ episode.episode_number }}: {{ episode.name }}</h3>
-                    <div><strong>Fecha de estreno:</strong> {{ episode.air_date }}</div>
-                    <div><strong>Descripción:</strong> {{ episode.overview }}</div>
-                </div>
+                <div><strong>Número de episodios:</strong> {{ season.episode_count }}</div>
+                <div><strong>Descripción:</strong> {{ season.overview || 'No hay descripción disponible.' }}</div>
             </div>
         </div>
     </div>
-</div>
+    
+
 
 <script>
     new Vue({
