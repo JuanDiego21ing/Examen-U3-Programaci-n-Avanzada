@@ -410,9 +410,13 @@
             v-if="movie.keywords && movie.keywords.keywords.length"
           >
             <h2>Palabras clave</h2>
-            <span v-for="keyword in movie.keywords.keywords" :key="keyword.id"
-              >{{ keyword.name }}</span
-            >
+            <button
+              v-for="keyword in movie.keywords.keywords"
+              :key="keyword.id"
+              @click="keywordClicked(keyword.name)"
+          >
+              {{ keyword.name }}
+            </button>
           </div>
         </div>
       </div>
@@ -489,6 +493,9 @@
             const iframe = document.querySelector(".modal-content iframe");
             iframe.src = iframe.src;
           },
+          keywordClicked(keyword) {
+          window.location.href = `keywordmovies.html?keyword=${encodeURIComponent(keyword)}`;
+  },
         },
         created() {
           this.getMovieDetails();
