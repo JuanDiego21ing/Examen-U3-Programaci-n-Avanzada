@@ -26,6 +26,7 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             width: 200px;
             text-align: center;
+            cursor: pointer; 
         }
 
         .movie img {
@@ -40,11 +41,26 @@
     </style>
 </head>
 <body>
+    <div id="navbar">
+        <script>
+          function loadNavbar() {
+            fetch("navbar.html")
+              .then((response) => response.text())
+              .then((data) => {
+                document.getElementById("navbar").innerHTML = data;
+              })
+              .catch((error) =>
+                console.error("Error al cargar el navbar:", error)
+              );
+          }
+          loadNavbar();
+        </script>
+      </div>
     <div id="app">
         <h1>Películas relacionadas con: "{{ keyword }}"</h1>
         <div class="movies">
             <div v-if="movies.length === 0">No se encontraron películas.</div>
-            <div class="movie" v-for="movie in movies" :key="movie.id">
+            <div class="movie" v-for="movie in movies" :key="movie.id" @click="goToMovieDetails(movie.id)">
                 <h2>{{ movie.title }}</h2>
                 <p>{{ movie.release_date }}</p>
                 <img :src="getPoster(movie.poster_path)" alt="Poster de {{ movie.title }}">
@@ -86,7 +102,10 @@
                 getPoster(path) {
                     return path
                         ? `https://image.tmdb.org/t/p/w500${path}`
-                        : 'https://via.placeholder.com/200x300'; // Placeholder en caso de no haber imagen
+                        : 'https://via.placeholder.com/200x300'; 
+                },
+                goToMovieDetails(movieId) {
+                    window.location.href = `movieDetails.html?id=${movieId}`; 
                 },
             },
             created() {
