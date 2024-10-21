@@ -1,18 +1,13 @@
 {
-  "rewrites": [
-    {
-      "source": "/movie/(.*)",
-      "destination": "/movieDetails.html"
-    },
-    {
-      "source": "/series/(.*)",
-      "destination": "/seriesDetails.html"
-    },
-    {
-      "source": "/actor/(.*)",
-      "destination": "/actorDetails.html"
-    }
-  ]
-}
-
+    "rewrites": [
+      {
+        "source": "/(.*)",
+        "destination": "/movieDetails.html"
+      },
+      {
+        "source": "/(.*)",
+        "destination": "/actorDetails.html"
+      }
+    ]
+  }
   
