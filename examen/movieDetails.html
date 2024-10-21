@@ -337,7 +337,9 @@
             </div>
             <div class="buttons">
               <button @click="rateMovie">⭐ Rating</button>
-              <button @click="addFavorite">❤️ Favorito</button>
+              <button @click="toggleFavorite">
+                {{ isFavorite ? '❤️ En Favoritos' : '🤍 Añadir a Favoritos' }}
+              </button>
               <button @click="openTrailerModal">🎬 Ver Trailer</button>
             </div>
 
@@ -414,7 +416,7 @@
               v-for="keyword in movie.keywords.keywords"
               :key="keyword.id"
               @click="keywordClicked(keyword.name)"
-          >
+            >
               {{ keyword.name }}
             </button>
           </div>
@@ -429,6 +431,8 @@
           movie: {},
           trailerKey: null,
           showModal: false,
+          isFavorite: false,
+          sessionId: localStorage.getItem("session_id"),
         },
         methods: {
           getMovieDetails() {
@@ -441,7 +445,7 @@
               .then((response) => response.json())
               .then((data) => {
                 this.movie = data;
-
+                this.checkIfFavorite();
                 const trailers = data.videos.results.filter(
                   (video) =>
                     video.site === "YouTube" && video.type === "Trailer"
@@ -475,8 +479,69 @@
           rateMovie() {
             alert("Función de rating en desarrollo.");
           },
-          addFavorite() {
-            alert("Añadido a favoritos.");
+          toggleFavorite() {
+            if (!this.sessionId) {
+              alert("Por favor, inicie sesión para marcar como favorito.");
+              window.location.href = "login.html";
+              return;
+            }
+
+            const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+            const accountUrl = `https://api.themoviedb.org/3/account?api_key=${apiKey}&session_id=${this.sessionId}`;
+
+            fetch(accountUrl)
+              .then((response) => response.json())
+              .then((account) => {
+                const url = `https://api.themoviedb.org/3/account/${account.id}/favorite?api_key=${apiKey}&session_id=${this.sessionId}`;
+
+                return fetch(url, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    media_type: "movie",
+                    media_id: this.movie.id,
+                    favorite: !this.isFavorite,
+                  }),
+                });
+              })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.success) {
+                  this.isFavorite = !this.isFavorite;
+                  alert(
+                    this.isFavorite
+                      ? "Añadido a favoritos"
+                      : "Eliminado de favoritos"
+                  );
+                } else {
+                  alert("Error al actualizar favoritos.");
+                }
+              })
+              .catch((error) =>
+                console.error("Error al marcar como favorito:", error)
+              );
+          },
+          checkIfFavorite() {
+            if (!this.sessionId) return;
+            const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+            const accountUrl = `https://api.themoviedb.org/3/account?api_key=${apiKey}&session_id=${this.sessionId}`;
+
+            fetch(accountUrl)
+              .then((response) => response.json())
+              .then((account) => {
+                const url = `https://api.themoviedb.org/3/account/${account.id}/favorite/movies?api_key=${apiKey}&session_id=${this.sessionId}`;
+
+                return fetch(url);
+              })
+              .then((response) => response.json())
+              .then((data) => {
+                this.isFavorite = data.results.some(
+                  (movie) => movie.id === this.movie.id
+                );
+              })
+              .catch((error) =>
+                console.error("Error al verificar favoritos:", error)
+              );
           },
           openTrailerModal() {
             if (this.trailerKey) {
@@ -494,8 +559,10 @@
             iframe.src = iframe.src;
           },
           keywordClicked(keyword) {
-          window.location.href = `keywordmovies.html?keyword=${encodeURIComponent(keyword)}`;
-  },
+            window.location.href = `keywordmovies.html?keyword=${encodeURIComponent(
+              keyword
+            )}`;
+          },
         },
         created() {
           this.getMovieDetails();
