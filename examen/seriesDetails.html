@@ -281,7 +281,10 @@
               </div>
             </div>
             <div class="buttons">
-              <button @click="rateSeries">⭐ Rating</button>
+              <button @click="rateSeries">
+                {{ userRating ? `⭐ Calificación: ${userRating}` : '⭐ Rating'
+                }}
+              </button>
               <button @click="toggleFavorite">
                 {{ isFavorite ? '❤️ En Favoritos' : '🤍 Añadir a Favoritos' }}
               </button>
@@ -369,6 +372,7 @@
           maxChars: 150,
           isFavorite: false,
           sessionId: localStorage.getItem("session_id"),
+          userRating: null,
         },
         computed: {
           truncatedOverview() {
@@ -455,6 +459,75 @@
                 console.error("Error al marcar como favorito:", error)
               );
           },
+          getUserRating() {
+            if (!this.sessionId) return;
+
+            const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+            const accountUrl = `https://api.themoviedb.org/3/account?api_key=${apiKey}&session_id=${this.sessionId}`;
+
+            fetch(accountUrl)
+              .then((response) => response.json())
+              .then((account) => {
+                const url = `https://api.themoviedb.org/3/account/${account.id}/rated/tv?api_key=${apiKey}&session_id=${this.sessionId}`;
+
+                return fetch(url);
+              })
+              .then((response) => response.json())
+              .then((data) => {
+                const ratedSeries = data.results.find(
+                  (series) => series.id === this.series.id
+                );
+                if (ratedSeries) {
+                  this.userRating = ratedSeries.rating;
+                }
+              })
+              .catch((error) =>
+                console.error(
+                  "Error al obtener la calificación del usuario:",
+                  error
+                )
+              );
+          },
+          rateSeries() {
+            if (!this.sessionId) {
+              alert("Por favor, inicie sesión para calificar la serie.");
+              window.location.href = "login.html";
+              return;
+            }
+
+            const rating = prompt(
+              "Introduce una calificación (de 1 a 10):",
+              "5"
+            );
+
+            if (rating && rating >= 1 && rating <= 10) {
+              const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+              const url = `https://api.themoviedb.org/3/tv/${this.series.id}/rating?api_key=${apiKey}&session_id=${this.sessionId}`;
+
+              fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ value: parseFloat(rating) }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.success) {
+                    this.userRating = rating;
+                    alert("Calificación enviada correctamente.");
+                  } else {
+                    alert("Error al enviar la calificación.");
+                  }
+                })
+                .catch((error) =>
+                  console.error("Error al calificar la serie:", error)
+                );
+            } else {
+              alert(
+                "Calificación no válida. Introduce un número entre 1 y 10."
+              );
+            }
+          },
+
           checkIfFavorite() {
             if (!this.sessionId) return;
             const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
@@ -491,6 +564,7 @@
         },
         created() {
           this.getSeriesDetails();
+          this.getUserRating();
         },
       });
     </script>

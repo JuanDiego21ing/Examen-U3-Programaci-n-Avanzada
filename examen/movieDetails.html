@@ -336,7 +336,10 @@
               </ul>
             </div>
             <div class="buttons">
-              <button @click="rateMovie">⭐ Rating</button>
+              <button @click="rateMovie">
+                {{ userRating ? `⭐ Calificación: ${userRating}` : '⭐ Rating'
+                }}
+              </button>
               <button @click="toggleFavorite">
                 {{ isFavorite ? '❤️ En Favoritos' : '🤍 Añadir a Favoritos' }}
               </button>
@@ -433,6 +436,7 @@
           showModal: false,
           isFavorite: false,
           sessionId: localStorage.getItem("session_id"),
+          userRating: null,
         },
         methods: {
           getMovieDetails() {
@@ -477,7 +481,72 @@
               : "https://via.placeholder.com/150x225";
           },
           rateMovie() {
-            alert("Función de rating en desarrollo.");
+            if (!this.sessionId) {
+              alert("Por favor, inicie sesión para calificar la película.");
+              window.location.href = "login.html";
+              return;
+            }
+
+            const rating = prompt(
+              "Introduce una calificación (de 1 a 10):",
+              "5"
+            );
+
+            if (rating && rating >= 1 && rating <= 10) {
+              const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+              const url = `https://api.themoviedb.org/3/movie/${this.movie.id}/rating?api_key=${apiKey}&session_id=${this.sessionId}`;
+
+              fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ value: parseFloat(rating) }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.success) {
+                    this.userRating = rating;
+                    alert("Calificación enviada correctamente.");
+                  } else {
+                    alert("Error al enviar la calificación.");
+                  }
+                })
+                .catch((error) =>
+                  console.error("Error al calificar la película:", error)
+                );
+            } else {
+              alert(
+                "Calificación no válida. Introduce un número entre 1 y 10."
+              );
+            }
+          },
+          getUserRating() {
+            if (!this.sessionId) return;
+
+            const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
+            const accountUrl = `https://api.themoviedb.org/3/account?api_key=${apiKey}&session_id=${this.sessionId}`;
+
+            fetch(accountUrl)
+              .then((response) => response.json())
+              .then((account) => {
+                const url = `https://api.themoviedb.org/3/account/${account.id}/rated/movies?api_key=${apiKey}&session_id=${this.sessionId}`;
+
+                return fetch(url);
+              })
+              .then((response) => response.json())
+              .then((data) => {
+                const ratedMovie = data.results.find(
+                  (movie) => movie.id === this.movie.id
+                );
+                if (ratedMovie) {
+                  this.userRating = ratedMovie.rating;
+                }
+              })
+              .catch((error) =>
+                console.error(
+                  "Error al obtener la calificación del usuario:",
+                  error
+                )
+              );
           },
           toggleFavorite() {
             if (!this.sessionId) {
@@ -566,6 +635,7 @@
         },
         created() {
           this.getMovieDetails();
+          this.getUserRating();
         },
       });
     </script>
