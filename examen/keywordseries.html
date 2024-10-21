@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Series por Palabra Clave</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .series {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .series-item {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 200px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .series-item img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+
+        .series-item h2 {
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Series relacionadas con: "{{ keyword }}"</h1>
+        <div class="series">
+            <div v-if="series.length === 0">No se encontraron series.</div>
+            <div class="series-item" v-for="serie in series" :key="serie.id" @click="goToSeriesDetails(serie.id)">
+                <h2>{{ serie.name }}</h2>
+                <p>{{ serie.first_air_date }}</p>
+                <img :src="getPoster(serie.poster_path)" alt="Poster de {{ serie.name }}">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                series: [],
+                keyword: '',
+            },
+            methods: {
+                fetchSeriesByKeyword() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    this.keyword = urlParams.get('keyword');
+
+                    const apiKey = 'c163bbc2bad129ed390aa1e11cd87550';
+                    const searchKeywordUrl = `https://api.themoviedb.org/3/search/keyword?api_key=${apiKey}&query=${encodeURIComponent(this.keyword)}`;
+
+                    fetch(searchKeywordUrl)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.results && data.results.length > 0) {
+                                const keywordId = data.results[0].id;
+                                return fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_keywords=${keywordId}&language=es-ES`);
+                            } else {
+                                throw new Error('No se encontró la palabra clave.');
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            this.series = data.results;
+                        })
+                        .catch(error => console.error("Error al obtener series:", error));
+                },
+                getPoster(path) {
+                    return path
+                        ? `https://image.tmdb.org/t/p/w500${path}`
+                        : 'https://via.placeholder.com/200x300';
+                },
+                goToSeriesDetails(seriesId) {
+                    window.location.href = `seriesDetails.html?id=${seriesId}`;
+                },
+            },
+            created() {
+                this.fetchSeriesByKeyword();
+            },
+        });
+    </script>
+</body>
+</html>
