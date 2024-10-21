@@ -11,6 +11,7 @@
         margin: 0;
         padding: 0;
         background-color: #f4f4f4;
+        overflow-x: hidden;
       }
 
       .banner {
@@ -80,26 +81,16 @@
         font-size: 1.1rem;
       }
 
-      .cast-list {
-        margin-top: 20px;
-      }
-
-      .cast-list h3 {
-        margin-bottom: 10px;
-      }
-
-      .cast-list ul {
-        list-style: none;
-        padding: 0;
-      }
-
-      .cast-list ul li {
-        font-size: 1rem;
-        margin-bottom: 5px;
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
       }
 
       .carousel-container {
-        margin-top: 50px;
+        width: 68%;
       }
 
       .carousel {
@@ -192,10 +183,51 @@
         cursor: pointer;
       }
 
-      .read-more {
-        color: #f39c12;
+      .additional-info-container {
+        width: 30%;
+        margin-left: 20px;
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .additional-info-container p {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .additional-info-container .keywords {
+        display: block;
+        margin-top: 15px;
+      }
+
+      .additional-info-container .keywords span {
+        background-color: #032541;
+        color: white;
+        padding: 5px 10px;
+        margin-right: 5px;
+        margin-bottom: 10px;
+        display: inline-block;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        white-space: nowrap;
         cursor: pointer;
-        font-weight: bold;
+      }
+
+      .additional-info-container h2 {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        color: #032541;
+      }
+
+      @media (max-width: 767px) {
+        .carousel-container,
+        .additional-info-container {
+          width: 100%;
+          margin-bottom: 20px;
+        }
       }
     </style>
   </head>
@@ -236,22 +268,12 @@
                 <strong>Fecha de estreno:</strong> {{ series.first_air_date }}
               </div>
               <div><strong>Temporadas:</strong> {{ series.number_of_seasons }}</div>
+              <div><strong>Episodios:</strong> {{ series.number_of_episodes }}</div>
               <div class="genres">
                 <span v-for="genre in series.genres" :key="genre.id"
                   >{{ genre.name }}</span
                 >
               </div>
-            </div>
-            <div class="cast-list">
-              <h3>Reparto principal</h3>
-              <ul>
-                <li
-                  v-for="actor in series.credits.cast.slice(0, 5)"
-                  :key="actor.id"
-                >
-                  <strong>{{ actor.name }}</strong> / {{ actor.character }}
-                </li>
-              </ul>
             </div>
             <div class="buttons">
               <button @click="rateSeries">⭐ Rating</button>
@@ -259,30 +281,67 @@
               <button @click="goToSeasons">📺 Temporadas</button>
             </div>
 
-            <p class="overview">
-              {{ truncatedOverview }}
-              <span v-if="isTruncated" class="read-more" @click="showFullOverview">Leer más</span>
-            </p>
+            <p class="overview">{{ truncatedOverview }}</p>
           </div>
         </div>
       </div>
 
       <div class="container">
+        
         <div class="carousel-container">
-          <h2>Recomendaciones</h2>
+          <h2>Reparto completo</h2>
           <div class="carousel">
             <a
-              :href="'seriesDetails.html?id=' + rec.id"
+              :href="'actorDetails.html?id=' + actor.id"
               class="carousel-item"
-              v-for="rec in recommendations"
-              :key="rec.id"
+              v-for="actor in series.credits.cast.slice(0, 10)"
+              :key="actor.id"
             >
               <img
-                :src="getPoster(rec.poster_path)"
-                :alt="rec.name"
+                :src="getProfileImage(actor.profile_path)"
+                :alt="actor.name"
               />
-              <h3>{{ rec.name }}</h3>
+              <h3>{{ actor.name }}</h3>
+              <p>{{ actor.character }}</p>
             </a>
+          </div>
+
+          <div class="carousel-container">
+            <h2>Recomendaciones</h2>
+            <div class="carousel">
+              <a
+                :href="'seriesDetails.html?id=' + rec.id"
+                class="carousel-item"
+                v-for="rec in recommendations"
+                :key="rec.id"
+              >
+                <img
+                  :src="getPoster(rec.poster_path)"
+                  :alt="rec.name"
+                />
+                <h3>{{ rec.name }}</h3>
+              </a>
+            </div>
+          </div>
+        </div>
+
+       
+        <div class="additional-info-container">
+          <h2>Información Adicional</h2>
+          <p><strong>Status:</strong> {{ series.status }}</p>
+          <p><strong>Idioma Original:</strong> {{ series.original_language }}</p>
+          <p><strong>Duración promedio:</strong> {{ series.episode_run_time[0] }} minutos</p>
+          <p v-if="series.networks.length"><strong>Canal:</strong> {{ series.networks[0].name }}</p>
+          <p><strong>Popularidad:</strong> {{ series.popularity }}</p>
+
+          <div class="keywords" v-if="series.keywords && series.keywords.results.length">
+            <h2>Palabras clave</h2>
+            <span
+              v-for="keyword in series.keywords.results"
+              :key="keyword.id"
+              @click="keywordClicked(keyword.name)"
+              >{{ keyword.name }}</span
+            >
           </div>
         </div>
       </div>
@@ -309,7 +368,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const seriesId = urlParams.get("id");
             const apiKey = "c163bbc2bad129ed390aa1e11cd87550";
-            const url = `https://api.themoviedb.org/3/tv/${seriesId}?api_key=${apiKey}&language=es-ES&append_to_response=credits,recommendations`;
+            const url = `https://api.themoviedb.org/3/tv/${seriesId}?api_key=${apiKey}&language=es-ES&append_to_response=credits,recommendations,keywords`;
 
             fetch(url)
               .then((response) => response.json())
@@ -331,6 +390,11 @@
               ? `https://image.tmdb.org/t/p/original${path}`
               : "https://via.placeholder.com/1000x500";
           },
+          getProfileImage(path) {
+            return path
+              ? `https://image.tmdb.org/t/p/w200${path}`
+              : "https://via.placeholder.com/150x225";
+          },
           rateSeries() {
             alert("Función de rating en desarrollo.");
           },
@@ -338,12 +402,11 @@
             alert("Añadido a favoritos.");
           },
           goToSeasons() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const seriesId = urlParams.get("id");
+            const seriesId = new URLSearchParams(window.location.search).get("id");
             window.location.href = `seasons.html?id=${seriesId}`;
           },
-          showFullOverview() {
-            this.isTruncated = false;
+          keywordClicked(keyword) {
+            window.location.href = `keywordmovies.html?keyword=${encodeURIComponent(keyword)}`;
           },
         },
         created() {
