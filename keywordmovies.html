@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Películas por Palabra Clave</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .movies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .movie {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 200px;
+            text-align: center;
+            cursor: pointer; 
+        }
+
+        .movie img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+
+        .movie h2 {
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <script>
+          function loadNavbar() {
+            fetch("navbar.html")
+              .then((response) => response.text())
+              .then((data) => {
+                document.getElementById("navbar").innerHTML = data;
+              })
+              .catch((error) =>
+                console.error("Error al cargar el navbar:", error)
+              );
+          }
+          loadNavbar();
+        </script>
+      </div>
+    <div id="app">
+        <h1>Películas relacionadas con: "{{ keyword }}"</h1>
+        <div class="movies">
+            <div v-if="movies.length === 0">No se encontraron películas.</div>
+            <div class="movie" v-for="movie in movies" :key="movie.id" @click="goToMovieDetails(movie.id)">
+                <h2>{{ movie.title }}</h2>
+                <p>{{ movie.release_date }}</p>
+                <img :src="getPoster(movie.poster_path)" alt="Poster de {{ movie.title }}">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                movies: [],
+                keyword: '',
+            },
+            methods: {
+                fetchMoviesByKeyword() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    this.keyword = urlParams.get('keyword');
+
+                    const apiKey = 'c163bbc2bad129ed390aa1e11cd87550';
+                    const searchKeywordUrl = `https://api.themoviedb.org/3/search/keyword?api_key=${apiKey}&query=${encodeURIComponent(this.keyword)}`;
+
+                    fetch(searchKeywordUrl)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.results && data.results.length > 0) {
+                                const keywordId = data.results[0].id;
+                                return fetch(`https://api.themoviedb.org/3/keyword/${keywordId}/movies?api_key=${apiKey}&language=es-ES`);
+                            } else {
+                                throw new Error('No se encontró la palabra clave.');
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            this.movies = data.results;
+                        })
+                        .catch(error => console.error("Error al obtener películas:", error));
+                },
+                getPoster(path) {
+                    return path
+                        ? `https://image.tmdb.org/t/p/w500${path}`
+                        : 'https://via.placeholder.com/200x300'; 
+                },
+                goToMovieDetails(movieId) {
+                    window.location.href = `movieDetails.html?id=${movieId}`; 
+                },
+            },
+            created() {
+                this.fetchMoviesByKeyword();
+            },
+        });
+    </script>
+</body>
+</html>
